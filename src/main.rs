@@ -1,22 +1,23 @@
-// looked up
-use std::io::BufRead;
-
+// never solved
+use std::io::{BufRead};
+use std::collections::VecDeque;
 fn main() {
-    let np = std::io::stdin().lock().lines().next().unwrap().unwrap().parse::<i32>().unwrap();
-    for _i in 0..np {
-        let mut s_i = String::new();
-        std::io::stdin().read_line(&mut s_i);
-        let mut li = s_i.trim().split(" ").flat_map(str::parse::<i32>).collect::<Vec<_>>();
-        if li.contains(&0) == false {
-            li.sort();
-            let mut modd = li.iter().sum::<i32>() / 9;
-            if li.iter().sum::<i32>() % 9 == 0 && li[0] >= modd && li[1] >= modd && li[2] >= modd {
-                println!("YES");
+    let ins = std::io::stdin().lock().lines().next().unwrap().unwrap().parse::<i32>().unwrap();
+    let mut si = String::new();
+    std::io::stdin().read_line(&mut si);
+    let mut sil = si.trim().split(" ").flat_map(str::parse::<i32>).collect::<VecDeque<_>>();
+    let mut dollar = 0;
+    sil.push_front(0);
+    for index in 0..sil.len() {
+        if index!=sil.len()-1 && sil[index] - sil[index + 1] < 0  {
+            if index as i32 != sil.len() as i32 -2 {
+                dollar += (sil[index] - sil[index + 1]).abs();
+                println!("dollar {}",dollar);
             } else {
-                println!("NO");
+                dollar += (sil[index]-sil[index+1]).abs();
+                println!("dollars {}",dollar);
             }
-        } else {
-            println!("NO");
         }
     }
+    println!("{}",dollar);
 }
