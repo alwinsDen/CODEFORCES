@@ -1,45 +1,48 @@
 use std::io::BufRead;
-use std::process::exit;
-
-fn binary_search(arr: &Vec<i32>, x: i32) -> i32 {
-    let mut high = (arr.len() - 1) as i32;
-    let mut low = 0;
-    while high >= low {
-        let mut mid = low + (high - low) / 2;
-        if arr[mid as usize] == x {
-            return mid;
-        }
-        if arr[mid as usize] > x {
-            high = mid - 1;
-        } else {
-            low = mid + 1;
-        }
-    }
-    -1
-}
-
+use std::collections::HashSet;
 fn main() {
-    let mut m = std::io::stdin().lock().lines().next().unwrap().unwrap().parse::<i32>().unwrap();
-    let mut l1 = String::new();
-    std::io::stdin().read_line(&mut l1);
-    let mut l1 = l1.trim().split(" ").flat_map(str::parse::<i32>).collect::<Vec<_>>();
-    l1.sort();
-    if m == 2 {
-        println!("1 1");
-        exit(0);
-    }
-    let mut cl1 = l1.clone();
-    let mut val_list: Vec<i32> = Vec::new();
-    for l in 0..l1[l1.len() - 1] + 1 {
-        if l != 0 && l1[l1.len() - 1] % l == 0 {
-            val_list.push(binary_search(&cl1, l));
+    let mut n=std::io::stdin().lock().lines().next().unwrap().unwrap().parse::<i32>().unwrap();
+    for _ in 0..n{
+        let mut k=String::new();
+        let mut l=String::new();
+        std::io::stdin().read_line(&mut k);
+        std::io::stdin().read_line(&mut l);
+        let mut k=k.trim().split(" ").flat_map(str::parse::<i32>).collect::<Vec<_>>();
+        let mut l=l.trim().split(" ").flat_map(str::parse::<i32>).collect::<Vec<_>>();
+        let mut poss = Vec::new();
+        for jm in l.iter() {
+            if *jm>k[1]+1-jm{
+                poss.push(k[1]+1-jm);
+                poss.push(*jm);
+                continue;
+            }
+            poss.push(*jm);
+            poss.push(k[1] + 1 - jm);
         }
+        // println!("{:?}",poss);
+        let mut cnt=0;
+        let mut cnp = Vec::new();
+        for (p1,p2) in poss.iter().enumerate(){
+            if p1%2!=0 {continue;}
+            if cnp.contains(p2) && cnp.contains(&poss[p1+1]) {
+                continue;
+            }
+            if cnp.contains(p2){
+                cnp.push(poss[p1+1]);
+                continue;
+            } else{
+                cnp.push(*p2);
+                continue;
+            }
+        }
+        cnp.sort();
+        for jk in 0..k[1] {
+            if cnp.contains(&(jk +1)) {
+                print!("A");
+            } else {
+                print!("B")
+            }
+        }
+        println!("");
     }
-    // println!("{}",cl1.len());
-    let mut offset = 0;
-    for (m, j) in val_list.iter().enumerate() {
-        cl1.remove(*j as usize - offset as usize);
-        offset += 1;
-    }
-    println!("{:?} {:?}", l1[l1.len() - 1], cl1[cl1.len()-1]);
 }
