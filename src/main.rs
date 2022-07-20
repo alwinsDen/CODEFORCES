@@ -1,48 +1,56 @@
 use std::io::BufRead;
-use std::collections::HashSet;
+
 fn main() {
-    let mut n=std::io::stdin().lock().lines().next().unwrap().unwrap().parse::<i32>().unwrap();
-    for _ in 0..n{
-        let mut k=String::new();
-        let mut l=String::new();
-        std::io::stdin().read_line(&mut k);
-        std::io::stdin().read_line(&mut l);
-        let mut k=k.trim().split(" ").flat_map(str::parse::<i32>).collect::<Vec<_>>();
-        let mut l=l.trim().split(" ").flat_map(str::parse::<i32>).collect::<Vec<_>>();
-        let mut poss = Vec::new();
-        for jm in l.iter() {
-            if *jm>k[1]+1-jm{
-                poss.push(k[1]+1-jm);
-                poss.push(*jm);
-                continue;
-            }
-            poss.push(*jm);
-            poss.push(k[1] + 1 - jm);
-        }
-        // println!("{:?}",poss);
-        let mut cnt=0;
-        let mut cnp = Vec::new();
-        for (p1,p2) in poss.iter().enumerate(){
-            if p1%2!=0 {continue;}
-            if cnp.contains(p2) && cnp.contains(&poss[p1+1]) {
-                continue;
-            }
-            if cnp.contains(p2){
-                cnp.push(poss[p1+1]);
-                continue;
-            } else{
-                cnp.push(*p2);
-                continue;
-            }
-        }
-        cnp.sort();
-        for jk in 0..k[1] {
-            if cnp.contains(&(jk +1)) {
-                print!("A");
-            } else {
-                print!("B")
-            }
-        }
-        println!("");
+ let mut n = std::io::stdin().lock().lines().next().unwrap().unwrap().parse::<i32>().unwrap();
+ for _ in 0..n {
+  let mut k = String::new();
+  std::io::stdin().read_line(&mut k);
+  let mut k = k.trim();
+  let mut tcount = -1;
+  let mut scount = Vec::new();
+  let mut fln = String::new();
+  let radix: u32 = 10;
+  for (jm, jl) in k.chars().rev().enumerate() {
+   if jm == k.len() - 1 { continue; }
+   let mut sum = jl.to_digit(radix).unwrap() + (k.as_bytes()[k.len() - jm - 2] as char).to_digit
+   (radix)
+    .unwrap();
+   if sum > 9 {
+    tcount = jm as i32+1;
+    break;
+   } else {
+    scount.push(k.len() as i32 - 1 - jm as i32);
+   }
+  }
+  //loop for dealing with values greater that 10
+  if tcount > -1 {
+   let mut lec = 2;
+   for (jm, jl) in k.chars().enumerate() {
+    if lec==1 {lec-=1;continue;}
+    if jm as i32 == k.len() as i32 - 1 -tcount {
+     let sum = jl.to_digit(radix).unwrap() + (k.as_bytes()[jm+1] as char)
+      .to_digit(radix).unwrap();
+     print!("{}", sum);
+     lec-=1;
+    } else {
+     print!("{}", jl);
     }
+   }
+  }
+
+  //loop for dealing with  values less of equal to 9
+  else if scount.len()>0 {
+   let mut tec=2;
+   for (jm,jl) in k.chars().enumerate(){
+    if jm==1 {continue;}
+    if jm==0{
+     let sum = jl.to_digit(radix).unwrap()+(k.as_bytes()[jm+1] as char).to_digit(radix).unwrap();
+     print!("{}",sum);
+    } else {
+     print!("{}",jl);
+    }
+   }
+  }
+  println!("");
+ }
 }
